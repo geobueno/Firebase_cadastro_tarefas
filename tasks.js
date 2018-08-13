@@ -11,8 +11,7 @@ function addTasksClick(event) {
 
     var newTask = $(".tasks-input").val();
     var taskFromDB = addTaskToDB(newTask);
-
-    createListItem(newTask, taskFromDB.key)
+    crudListItem(newTask, taskFromDB.key)
 }
 
 function addTaskToDB(text) {
@@ -27,21 +26,39 @@ function getTasksFromDB() {
             snapshot.forEach(function(childSnapshot) {
                 var childKey = childSnapshot.key;
                 var childData = childSnapshot.val();
-                createListItem(childData.text, childKey)
+                crudListItem(childData.text, childKey)
             });
         });
 }
 
-
-function createListItem(text, key) {
+function crudListItem(text, key) {
     $(".tasks-list").append(`
     <li>
-      <input type="checkbox" data-task-id=${key} />
       <span>${text}</span>
+      <button class="delete" data-task-id=${key}>Deletar</button>
+      <button class="edit" data-task-id=${key}>Editar</button>
     </li>`);
 
-    $(`input[data-task-id="${key}"]`).click(function() {
+    $(`button.delete[data-task-id="${key}"]`).click(function() {
         database.ref("tasks/" + userID + "/" + key).remove();
         $(this).parent().remove();
     });
+
+    $(`button.edit[data-task-id="${key}"]`).click(function() {
+        database.ref("tasks/" + userID + "/" + key).remove();
+        $(this).parent().remove();
+        $(".tasks-list").append(`
+        <li>
+        <textarea>${text}</textarea>
+          <button class="delete" data-task-id=${key}>Deletar</button>
+          <button class="edit" data-task-id=${key}>Update</button>
+        </li>`);
+
+
+
+
+
+
+    });
+
 }
